@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { ArrowLeft, Pin, PinOff, Pencil, Trash2, Plus } from "lucide-react";
 
 interface Blog {
   _id: string;
@@ -221,7 +222,7 @@ export default function HomePage() {
             onClick={() => { setView("list"); setSelectedBlog(null); }}
             className="text-sm text-muted hover:text-foreground transition-colors flex items-center gap-1.5"
           >
-            <span>&larr;</span> Back
+            <ArrowLeft size={16} /> Back
           </button>
           <div className="flex items-center gap-3">
             <button
@@ -288,7 +289,7 @@ export default function HomePage() {
             onClick={() => { setView("list"); resetForm(); }}
             className="text-sm text-muted hover:text-foreground transition-colors flex items-center gap-1.5"
           >
-            <span>&larr;</span> Back
+            <ArrowLeft size={16} /> Back
           </button>
           <div className="flex items-center gap-3">
             <button
@@ -418,7 +419,7 @@ export default function HomePage() {
             </p>
           </div>
         ) : (
-          <div className="space-y-1">
+          <div className="space-y-4">
             {blogs.map((blog) => {
               const moodInfo = blog.mood ? MOODS[blog.mood] : null;
               return (
@@ -431,7 +432,7 @@ export default function HomePage() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
                         {blog.pinned && (
-                          <span className="text-accent text-xs">📌</span>
+                          <Pin size={14} className="text-accent shrink-0" />
                         )}
                         <h2 className="text-lg font-semibold truncate">
                           {blog.title}
@@ -476,21 +477,21 @@ export default function HomePage() {
                         className="p-1.5 text-muted hover:text-foreground rounded-md hover:bg-input-bg transition-colors"
                         title={blog.pinned ? "Unpin" : "Pin"}
                       >
-                        📌
+                        {blog.pinned ? <PinOff size={16} /> : <Pin size={16} />}
                       </button>
                       <button
                         onClick={() => startEdit(blog)}
                         className="p-1.5 text-muted hover:text-foreground rounded-md hover:bg-input-bg transition-colors"
                         title="Edit"
                       >
-                        ✏️
+                        <Pencil size={16} />
                       </button>
                       <button
                         onClick={() => setShowDeleteConfirm(blog._id)}
                         className="p-1.5 text-muted hover:text-danger rounded-md hover:bg-input-bg transition-colors"
                         title="Delete"
                       >
-                        🗑️
+                        <Trash2 size={16} />
                       </button>
                     </div>
                   </div>
