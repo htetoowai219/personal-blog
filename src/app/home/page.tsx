@@ -2,44 +2,16 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import { ArrowLeft, Pin, PinOff, Pencil, Trash2, Plus } from "lucide-react";
-
-interface Blog {
-  _id: string;
-  title: string;
-  content: string;
-  mood?: string;
-  tags?: string[];
-  pinned?: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
-const MOODS: Record<string, { emoji: string; label: string; color: string }> = {
-  reflective: { emoji: "🪞", label: "Reflective", color: "text-[var(--mood-reflect)]" },
-  grateful: { emoji: "🙏", label: "Grateful", color: "text-[var(--mood-grateful)]" },
-  anxious: { emoji: "🌊", label: "Anxious", color: "text-[var(--mood-anxious)]" },
-  calm: { emoji: "🧘", label: "Calm", color: "text-[var(--mood-calm)]" },
-  inspired: { emoji: "✨", label: "Inspired", color: "text-[var(--mood-inspired)]" },
-  sad: { emoji: "🌧", label: "Sad", color: "text-[var(--mood-sad)]" },
-};
+import Link from "next/link";
+import { Pin, PinOff, Pencil, Trash2 } from "lucide-react";
+import { Blog, MOODS, formatDate, handleLogout } from "@/lib/utils";
 
 export default function HomePage() {
   const router = useRouter();
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [view, setView] = useState<"list" | "create" | "edit" | "read">("list");
-  const [selectedBlog, setSelectedBlog] = useState<Blog | null>(null);
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [mood, setMood] = useState("");
-  const [tagsInput, setTagsInput] = useState("");
-  const [saving, setSaving] = useState(false);
   const [username, setUsername] = useState("");
-  const [preview, setPreview] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
 
   const fetchBlogs = useCallback(async (searchQuery?: string) => {
@@ -71,7 +43,6 @@ export default function HomePage() {
       .then((data) => {
         if (data) setUsername(data.username);
       });
-
     fetchBlogs();
   }, [fetchBlogs, router]);
 
@@ -82,58 +53,12 @@ export default function HomePage() {
     return () => clearTimeout(timer);
   }, [search, fetchBlogs]);
 
-  const handleSave = async () => {
-    if (!title.trim() || !content.trim()) return;
-    setSaving(true);
-
-    const tags = tagsInput
-      .split(",")
-      .map((t) => t.trim())
-      .filter(Boolean);
-
-    try {
-      if (view === "edit" && selectedBlog) {
-        const res = await fetch(`/api/blogs/${selectedBlog._id}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ title, content, mood, tags }),
-        });
-        if (res.ok) {
-          const updated = await res.json();
-          setBlogs((prev) =>
-            prev.map((b) => (b._id === updated._id ? updated : b))
-          );
-        }
-      } else {
-        const res = await fetch("/api/blogs", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ title, content, mood, tags }),
-        });
-        if (res.ok) {
-          const newBlog = await res.json();
-          setBlogs((prev) => [newBlog, ...prev]);
-        }
-      }
-      resetForm();
-      setView("list");
-    } catch {
-      // silent
-    } finally {
-      setSaving(false);
-    }
-  };
-
   const handleDelete = async (id: string) => {
     try {
       const res = await fetch(`/api/blogs/${id}`, { method: "DELETE" });
       if (res.ok) {
         setBlogs((prev) => prev.filter((b) => b._id !== id));
         setShowDeleteConfirm(null);
-        if (view === "read" && selectedBlog?._id === id) {
-          setView("list");
-          setSelectedBlog(null);
-        }
       }
     } catch {
       // silent
@@ -158,52 +83,6 @@ export default function HomePage() {
     }
   };
 
-  const resetForm = () => {
-    setTitle("");
-    setContent("");
-    setMood("");
-    setTagsInput("");
-    setSelectedBlog(null);
-    setPreview(false);
-  };
-
-  const startEdit = (blog: Blog) => {
-    setSelectedBlog(blog);
-    setTitle(blog.title);
-    setContent(blog.content);
-    setMood(blog.mood || "");
-    setTagsInput(blog.tags?.join(", ") || "");
-    setPreview(false);
-    setView("edit");
-  };
-
-  const startRead = (blog: Blog) => {
-    setSelectedBlog(blog);
-    setView("read");
-  };
-
-  const handleLogout = async () => {
-    await fetch("/api/auth/logout", { method: "POST" });
-    router.replace("/auth");
-  };
-
-  const formatDate = (dateStr: string) => {
-    const d = new Date(dateStr);
-    return d.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  };
-
-  const formatTime = (dateStr: string) => {
-    const d = new Date(dateStr);
-    return d.toLocaleTimeString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -212,166 +91,6 @@ export default function HomePage() {
     );
   }
 
-  // ─── READ VIEW ──────────────────────────────────────────────────
-  if (view === "read" && selectedBlog) {
-    const moodInfo = selectedBlog.mood ? MOODS[selectedBlog.mood] : null;
-    return (
-      <div className="min-h-screen flex flex-col">
-        <header className="border-b border-border px-6 py-4 flex items-center justify-between">
-          <button
-            onClick={() => { setView("list"); setSelectedBlog(null); }}
-            className="text-sm text-muted hover:text-foreground transition-colors flex items-center gap-1.5"
-          >
-            <ArrowLeft size={16} /> Back
-          </button>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => startEdit(selectedBlog)}
-              className="text-sm text-accent hover:text-accent-hover transition-colors"
-            >
-              Edit
-            </button>
-            <button
-              onClick={handleLogout}
-              className="text-sm text-muted hover:text-foreground transition-colors"
-            >
-              Sign out
-            </button>
-          </div>
-        </header>
-        <main className="flex-1 max-w-3xl mx-auto w-full px-6 py-10">
-          <article>
-            <div className="mb-6">
-              <h1 className="text-3xl font-bold mb-3">{selectedBlog.title}</h1>
-              <div className="flex items-center gap-3 text-sm text-muted">
-                <span>{formatDate(selectedBlog.createdAt)}</span>
-                <span>·</span>
-                <span>{formatTime(selectedBlog.createdAt)}</span>
-                {moodInfo && (
-                  <>
-                    <span>·</span>
-                    <span className={moodInfo.color}>
-                      {moodInfo.emoji} {moodInfo.label}
-                    </span>
-                  </>
-                )}
-              </div>
-              {selectedBlog.tags && selectedBlog.tags.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-3">
-                  {selectedBlog.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="px-2 py-0.5 text-xs bg-input-bg text-muted rounded-full"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              )}
-            </div>
-            <div className="prose">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {selectedBlog.content}
-              </ReactMarkdown>
-            </div>
-          </article>
-        </main>
-      </div>
-    );
-  }
-
-  // ─── CREATE / EDIT VIEW ──────────────────────────────────────────
-  if (view === "create" || view === "edit") {
-    return (
-      <div className="min-h-screen flex flex-col">
-        <header className="border-b border-border px-6 py-4 flex items-center justify-between">
-          <button
-            onClick={() => { setView("list"); resetForm(); }}
-            className="text-sm text-muted hover:text-foreground transition-colors flex items-center gap-1.5"
-          >
-            <ArrowLeft size={16} /> Back
-          </button>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setPreview(!preview)}
-              className={`text-sm px-3 py-1 rounded-md transition-colors ${
-                preview
-                  ? "bg-accent text-white"
-                  : "text-muted hover:text-foreground border border-border"
-              }`}
-            >
-              {preview ? "Edit" : "Preview"}
-            </button>
-            <button
-              onClick={handleSave}
-              disabled={saving || !title.trim() || !content.trim()}
-              className="text-sm bg-accent hover:bg-accent-hover text-white px-4 py-1.5 rounded-md transition-colors disabled:opacity-50"
-            >
-              {saving ? "Saving..." : view === "edit" ? "Update" : "Publish"}
-            </button>
-          </div>
-        </header>
-        <main className="flex-1 max-w-3xl mx-auto w-full px-6 py-8">
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Give your thoughts a title..."
-            className="w-full text-3xl font-bold bg-transparent border-none placeholder:text-muted/40 mb-4 focus:outline-none"
-          />
-          <div className="flex items-center gap-4 mb-6 text-sm">
-            <div className="flex items-center gap-2">
-              <span className="text-muted">Mood:</span>
-              <div className="flex gap-1">
-                {Object.entries(MOODS).map(([key, val]) => (
-                  <button
-                    key={key}
-                    type="button"
-                    onClick={() => setMood(mood === key ? "" : key)}
-                    className={`px-2 py-0.5 rounded-md text-xs transition-all ${
-                      mood === key
-                        ? `${val.color} bg-input-bg ring-1 ring-current`
-                        : "text-muted hover:text-foreground"
-                    }`}
-                    title={val.label}
-                  >
-                    {val.emoji}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div className="flex items-center gap-2 flex-1">
-              <span className="text-muted whitespace-nowrap">Tags:</span>
-              <input
-                type="text"
-                value={tagsInput}
-                onChange={(e) => setTagsInput(e.target.value)}
-                placeholder="comma separated"
-                className="flex-1 bg-transparent border-none text-sm placeholder:text-muted/40 focus:outline-none"
-              />
-            </div>
-          </div>
-          <hr className="border-border mb-6" />
-          {preview ? (
-            <div className="prose min-h-[50vh]">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {content || "*Nothing to preview...*"}
-              </ReactMarkdown>
-            </div>
-          ) : (
-            <textarea
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              placeholder="Start writing... (Markdown supported)"
-              className="w-full min-h-[50vh] bg-transparent border-none resize-none placeholder:text-muted/30 focus:outline-none text-base leading-relaxed"
-            />
-          )}
-        </main>
-      </div>
-    );
-  }
-
-  // ─── LIST VIEW ──────────────────────────────────────────────────
   return (
     <div className="min-h-screen flex flex-col">
       <header className="border-b border-border px-6 py-4 flex items-center justify-between">
@@ -381,14 +100,14 @@ export default function HomePage() {
           <span className="text-sm text-muted">{username}</span>
         </div>
         <div className="flex items-center gap-3">
-          <button
-            onClick={() => { resetForm(); setView("create"); }}
+          <Link
+            href="/home/new"
             className="text-sm bg-accent hover:bg-accent-hover text-white px-4 py-1.5 rounded-md transition-colors"
           >
             + New Entry
-          </button>
+          </Link>
           <button
-            onClick={handleLogout}
+            onClick={() => handleLogout()}
             className="text-sm text-muted hover:text-foreground transition-colors"
           >
             Sign out
@@ -425,8 +144,8 @@ export default function HomePage() {
               return (
                 <div
                   key={blog._id}
-                  className="group bg-card hover:bg-card-hover border border-border rounded-xl p-5 transition-all cursor-pointer"
-                  onClick={() => startRead(blog)}
+                  className="group block bg-card hover:bg-card-hover border border-border rounded-xl p-5 transition-all cursor-pointer"
+                  onClick={() => router.push(`/home/${blog._id}`)}
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0">
@@ -473,21 +192,22 @@ export default function HomePage() {
                       onClick={(e) => e.stopPropagation()}
                     >
                       <button
-                        onClick={() => handleTogglePin(blog)}
+                        onClick={(e) => { e.stopPropagation(); handleTogglePin(blog); }}
                         className="p-1.5 text-muted hover:text-foreground rounded-md hover:bg-input-bg transition-colors"
                         title={blog.pinned ? "Unpin" : "Pin"}
                       >
                         {blog.pinned ? <PinOff size={16} /> : <Pin size={16} />}
                       </button>
-                      <button
-                        onClick={() => startEdit(blog)}
+                      <Link
+                        href={`/home/${blog._id}/edit`}
+                        onClick={(e) => e.stopPropagation()}
                         className="p-1.5 text-muted hover:text-foreground rounded-md hover:bg-input-bg transition-colors"
                         title="Edit"
                       >
                         <Pencil size={16} />
-                      </button>
+                      </Link>
                       <button
-                        onClick={() => setShowDeleteConfirm(blog._id)}
+                        onClick={(e) => { e.stopPropagation(); setShowDeleteConfirm(blog._id); }}
                         className="p-1.5 text-muted hover:text-danger rounded-md hover:bg-input-bg transition-colors"
                         title="Delete"
                       >
