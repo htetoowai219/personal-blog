@@ -18,7 +18,7 @@ Thanks for your interest in contributing! This is a personal blogging platform b
 ### Setup
 
 ```bash
-git clone <repo-url>
+git clone git@github.com:htetoowai219/personal-blog.git
 cd personal-blog
 npm install
 npm run dev
