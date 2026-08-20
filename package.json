@@ -1,6 +1,8 @@
 {
   "name": "personal-blog",
   "version": "0.1.0",
+  "description": "A self-hosted personal blogging platform for self-reflection, with Markdown support, mood tracking, and a dark-themed interface.",
+  "keywords": ["personal-blog", "self-reflection", "markdown", "nextjs", "mongodb", "dark-theme", "journaling", "blogging", "self-hosted"],
   "private": true,
   "scripts": {
     "dev": "next dev",
