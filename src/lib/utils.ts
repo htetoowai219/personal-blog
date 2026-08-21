@@ -33,7 +33,7 @@ export function formatTime(dateStr: string) {
   });
 }
 
-export async function handleLogout() {
+export async function handleLogout(router: { replace: (href: string) => void }) {
   await fetch("/api/auth/logout", { method: "POST" });
-  window.location.href = "/auth";
+  router.replace("/auth");
 }

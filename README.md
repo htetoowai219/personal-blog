@@ -20,11 +20,12 @@ A self-hosted personal blogging platform built for self-reflection. Write entrie
 |-----------|-----------------------|
 | Framework | Next.js 16 (App Router) |
 | Language  | TypeScript            |
-| Database  | MongoDB (local)       |
+| Database  | MongoDB (Atlas or local) |
 | Styling   | Tailwind CSS 4        |
 | Auth      | JWT (httpOnly cookies)|
 | Markdown  | react-markdown + remark-gfm |
 | Passwords | bcryptjs              |
+| Hosting   | Vercel-ready           |
 
 ## Prerequisites
 
@@ -94,21 +95,23 @@ src/
 
 ## Configuration
 
-Environment variables are optional. Defaults are set for local development:
+Copy `.env.example` to `.env.local` and fill in the values. Defaults are set for local development:
 
-| Variable      | Default                        | Description              |
-|---------------|--------------------------------|--------------------------|
-| `MONGODB_URI` | `mongodb://localhost:27017/`   | MongoDB connection string|
-| `MONGODB_DB`  | `personal_blog`                | Database name            |
-| `JWT_SECRET`  | (built-in fallback)            | Secret for JWT signing   |
+| Variable              | Required in production | Default                        | Description                          |
+|-----------------------|------------------------|--------------------------------|--------------------------------------|
+| `MONGODB_URI`         | Yes                    | `mongodb://localhost:27017/`   | MongoDB connection string            |
+| `MONGODB_DB`          | No                     | `personal_blog`                | Database name                        |
+| `JWT_SECRET`          | Yes                    | (dev-only fallback)            | Secret for JWT signing               |
+| `NEXT_PUBLIC_SITE_URL`| Recommended            | —                              | Public URL, used for metadata/social cards |
 
-To override, create a `.env.local` file:
+Generate a strong `JWT_SECRET` with:
 
+```bash
+openssl rand -base64 32
 ```
-MONGODB_URI=mongodb://localhost:27017/
-MONGODB_DB=personal_blog
-JWT_SECRET=your-very-long-random-secret
-```
+
+> The app refuses to boot in production if `MONGODB_URI` or `JWT_SECRET` are missing,
+> so misconfigurations surface immediately instead of failing silently.
 
 ## Production Build
 
@@ -118,6 +121,47 @@ npm start
 ```
 
 The app will start on port `3000` by default.
+
+## Deploying to Vercel
+
+1. **Create a MongoDB Atlas database** (free tier works fine)
+
+   1. Create a cluster at [mongodb.com/cloud/atlas](https://www.mongodb.com/cloud/atlas)
+   2. Add a database user and allow access from anywhere (`0.0.0.0/0`) under Network Access — Vercel functions use ephemeral IPs, so IP allowlists won't work
+   3. Grab the SRV connection string (`mongodb+srv://user:password@cluster...`)
+
+2. **Push the repository to GitHub**, then import it on [vercel.com/new](https://vercel.com/new)
+
+   Vercel auto-detects Next.js — no build settings needed.
+
+3. **Add environment variables** in your Vercel project (Settings → Environment Variables):
+
+   | Variable               | Value                                   |
+   |------------------------|-----------------------------------------|
+   | `MONGODB_URI`          | Your Atlas connection string            |
+   | `MONGODB_DB`           | `personal_blog`                         |
+   | `JWT_SECRET`           | Output of `openssl rand -base64 32`     |
+   | `NEXT_PUBLIC_SITE_URL` | `https://your-domain.vercel.app`        |
+
+4. **Deploy**
+
+   Every push to the main branch triggers a new deployment.
+
+Alternatively, deploy straight from the CLI:
+
+```bash
+npx vercel --prod
+```
+
+## Metadata
+
+The app ships with complete SEO/social metadata:
+
+- Title template (`Sign in · Personal Blog`, etc.) per route
+- Open Graph image generated at build time (`src/app/opengraph-image.tsx`)
+- Dark-themed favicon (`src/app/icon.svg`) and browser theme color
+- Search engines are told **not** to index the site by default since all content is private.
+  To make it indexable, change the `robots` entry in `src/app/layout.tsx`.
 
 ## License
 

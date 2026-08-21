@@ -109,7 +109,7 @@ export default function EditEntryPage() {
             {saving ? "Saving..." : "Update"}
           </button>
           <button
-            onClick={() => handleLogout()}
+            onClick={() => handleLogout(router)}
             className="text-sm text-muted hover:text-foreground transition-colors"
           >
             Sign out
