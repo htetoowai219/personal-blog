@@ -63,7 +63,7 @@ export default function ReadEntryPage() {
             Edit
           </Link>
           <button
-            onClick={() => handleLogout()}
+            onClick={() => handleLogout(router)}
             className="text-sm text-muted hover:text-foreground transition-colors"
           >
             Sign out

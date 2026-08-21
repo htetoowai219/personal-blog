@@ -71,7 +71,7 @@ export default function NewEntryPage() {
             {saving ? "Saving..." : "Publish"}
           </button>
           <button
-            onClick={() => handleLogout()}
+            onClick={() => handleLogout(router)}
             className="text-sm text-muted hover:text-foreground transition-colors"
           >
             Sign out

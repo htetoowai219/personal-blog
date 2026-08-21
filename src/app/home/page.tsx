@@ -43,13 +43,12 @@ export default function HomePage() {
       .then((data) => {
         if (data) setUsername(data.username);
       });
-    fetchBlogs();
-  }, [fetchBlogs, router]);
+  }, [router]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       fetchBlogs(search);
-    }, 300);
+    }, search ? 300 : 0);
     return () => clearTimeout(timer);
   }, [search, fetchBlogs]);
 
@@ -107,7 +106,7 @@ export default function HomePage() {
             + New Entry
           </Link>
           <button
-            onClick={() => handleLogout()}
+            onClick={() => handleLogout(router)}
             className="text-sm text-muted hover:text-foreground transition-colors"
           >
             Sign out

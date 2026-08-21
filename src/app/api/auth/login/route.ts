@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { connectToDatabase } from "@/lib/mongodb";
-import { signToken } from "@/lib/auth";
+import { setAuthCookie, signToken } from "@/lib/auth";
 import { User } from "@/lib/models";
 
 export async function POST(request: NextRequest) {
@@ -28,13 +28,7 @@ export async function POST(request: NextRequest) {
     const token = signToken({ userId: user._id!.toString(), username: user.username });
 
     const response = NextResponse.json({ username: user.username, userId: user._id!.toString() });
-    response.cookies.set("token", token, {
-      httpOnly: true,
-      secure: false,
-      sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 7,
-      path: "/",
-    });
+    setAuthCookie(response, token);
 
     return response;
   } catch {
