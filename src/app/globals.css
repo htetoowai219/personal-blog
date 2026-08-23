@@ -1,25 +1,29 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0f0f0f;
-  --foreground: #e4e4e7;
-  --card: #18181b;
-  --card-hover: #1f1f23;
-  --border: #27272a;
-  --muted: #71717a;
-  --accent: #a78bfa;
-  --accent-hover: #8b5cf6;
-  --danger: #ef4444;
-  --danger-hover: #dc2626;
-  --input-bg: #27272a;
-  --input-border: #3f3f46;
-  --success: #22c55e;
-  --mood-reflect: #60a5fa;
-  --mood-grateful: #fbbf24;
-  --mood-anxious: #f87171;
-  --mood-calm: #34d399;
-  --mood-inspired: #c084fc;
-  --mood-sad: #94a3b8;
+  /* Vintage Parchment Palette */
+  --background: #f5efe6;
+  --foreground: #2c2523;
+  --card: #eae2d6;
+  --card-hover: #e2d7c7;
+  --border: #d8cca6;
+  --muted: #6e6259;
+  --faint: #9e9185;
+  --ink: #1a1615;
+  --gold: #a36b31;
+  --accent: #984b39;
+  --accent-hover: #7d3d2e;
+  --danger: #a13c3c;
+  --danger-hover: #8c3030;
+  --input-bg: #faf6ee;
+  --input-border: #d8cca6;
+  --success: #5a7247;
+  --mood-reflect: #4a6b8a;
+  --mood-grateful: #b3822d;
+  --mood-anxious: #a84e42;
+  --mood-calm: #4e7d5b;
+  --mood-inspired: #7d5ba6;
+  --mood-sad: #64748b;
 }
 
 @theme inline {
@@ -29,6 +33,9 @@
   --color-card-hover: var(--card-hover);
   --color-border: var(--border);
   --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-ink: var(--ink);
+  --color-gold: var(--gold);
   --color-accent: var(--accent);
   --color-accent-hover: var(--accent-hover);
   --color-danger: var(--danger);
@@ -38,17 +45,19 @@
   --color-success: var(--success);
   --font-sans: var(--font-body);
   --font-heading: var(--font-heading);
-  --font-mono: var(--font-body);
+  --font-mono: var(--font-typewriter);
 }
 
 html {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), Georgia, serif;
+  font-size: 1.0625rem;
+  line-height: 1.75;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -57,86 +66,117 @@ h1, h2, h3, h4, h5, h6 {
 
 ::selection {
   background: var(--accent);
-  color: #000;
+  color: #fdfbf7;
 }
+
+/* ---------- Long-form article styling ---------- */
 
 .prose {
   color: var(--foreground);
-  line-height: 1.75;
+  line-height: 1.85;
 }
 
 .prose h1, .prose h2, .prose h3, .prose h4 {
-  color: var(--foreground);
+  color: var(--ink);
   font-family: var(--font-heading), Georgia, serif;
   font-weight: 700;
-  margin-top: 1.5em;
+  margin-top: 1.75em;
   margin-bottom: 0.5em;
+  letter-spacing: -0.01em;
 }
 
 .prose h1 { font-size: 1.875rem; }
 .prose h2 { font-size: 1.5rem; }
 .prose h3 { font-size: 1.25rem; }
 
-.prose p { margin-bottom: 1em; }
+.prose p { margin-bottom: 1.15em; }
 
 .prose a {
   color: var(--accent);
   text-decoration: underline;
+  text-decoration-color: var(--border);
+  text-underline-offset: 3px;
 }
 
 .prose a:hover {
   color: var(--accent-hover);
+  text-decoration-color: var(--accent);
 }
 
 .prose code {
-  background: var(--input-bg);
-  padding: 0.15em 0.4em;
-  border-radius: 4px;
-  font-size: 0.9em;
-  font-family: var(--font-mono), monospace;
+  font-family: var(--font-typewriter), monospace;
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 0.1em 0.35em;
+  border-radius: 3px;
+  font-size: 0.82em;
 }
 
 .prose pre {
-  background: var(--input-bg);
+  background: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: 3px 3px 0 rgba(44, 37, 35, 0.04);
   padding: 1em;
-  border-radius: 8px;
+  border-radius: 3px;
   overflow-x: auto;
-  margin: 1em 0;
+  margin: 1.25em 0;
 }
 
 .prose pre code {
   background: none;
+  border: none;
   padding: 0;
+  font-size: 0.85em;
+  line-height: 1.6;
 }
 
+/* Pull quotes: gold rule + oversized sepia quotation mark */
 .prose blockquote {
-  border-left: 3px solid var(--accent);
-  padding-left: 1em;
-  color: var(--muted);
-  margin: 1em 0;
+  position: relative;
   font-style: italic;
+  background: var(--card);
+  border-left: 3px solid var(--gold);
+  margin: 2rem 0;
+  padding: 1rem 1.25rem 1rem 3.25rem;
+  color: var(--muted);
+}
+
+.prose blockquote::before {
+  content: "\201C";
+  position: absolute;
+  left: 0.7rem;
+  top: 0.3rem;
+  font-family: var(--font-heading), Georgia, serif;
+  font-size: 3.25rem;
+  line-height: 1;
+  color: var(--gold);
+  opacity: 0.55;
 }
 
 .prose ul, .prose ol {
   padding-left: 1.5em;
-  margin: 0.5em 0;
+  margin: 0.5em 0 1.15em;
 }
 
-.prose li { margin: 0.25em 0; }
+.prose li { margin: 0.3em 0; }
 
 .prose ul { list-style-type: disc; }
+.prose ul li::marker { color: var(--gold); }
 .prose ol { list-style-type: decimal; }
+.prose ol li::marker { color: var(--gold); }
 
 .prose hr {
   border: none;
-  border-top: 1px solid var(--border);
-  margin: 2em 0;
+  border-top: 1px dashed var(--border);
+  margin: 2.25em auto;
+  width: 60%;
 }
 
 .prose table {
   width: 100%;
   border-collapse: collapse;
-  margin: 1em 0;
+  margin: 1.25em 0;
+  font-size: 0.95em;
 }
 
 .prose th, .prose td {
@@ -146,17 +186,28 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .prose th {
-  background: var(--input-bg);
+  background: var(--card);
   font-weight: 600;
 }
 
 .prose img {
   max-width: 100%;
-  border-radius: 8px;
+  border-radius: 3px;
+  box-shadow: 3px 3px 0 rgba(44, 37, 35, 0.06);
 }
 
-.prose strong { font-weight: 700; }
-.prose em { font-style: italic; }
+.prose strong { font-weight: 700; color: var(--ink); }
+
+/* Drop cap on the opening paragraph of an entry */
+.article-body > p:first-of-type::first-letter {
+  font-family: var(--font-heading), Georgia, serif;
+  font-size: 3.4em;
+  float: left;
+  line-height: 0.82;
+  padding: 0.06em 0.14em 0 0;
+  font-weight: 600;
+  color: var(--accent);
+}
 
 textarea:focus, input:focus, select:focus {
   outline: none;

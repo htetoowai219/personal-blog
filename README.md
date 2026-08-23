@@ -5,6 +5,7 @@ A self-hosted personal blogging platform built for self-reflection. Write entrie
 ## Features
 
 - **Authentication** — Login/register gate so only you can access your entries
+- **Profile panel** — Editable keeper's profile (name, location, bio) beside your entries
 - **Markdown editing** — Full GitHub Flavored Markdown support (tables, task lists, strikethrough, code blocks)
 - **Live preview** — Toggle between edit and preview modes while writing
 - **Mood tracking** — Tag each entry with a mood (Reflective, Grateful, Anxious, Calm, Inspired, Sad)
@@ -12,7 +13,7 @@ A self-hosted personal blogging platform built for self-reflection. Write entrie
 - **Pin entries** — Pin important posts to the top of the list
 - **Search** — Filter entries by title, content, or tags
 - **Delete with confirmation** — Inline confirm before removing an entry
-- **Dark theme** — Dark by default with a clean zinc/violet palette
+- **Vintage theme** — Warm parchment palette with serif typography and typewriter accents (see [design.md](design.md))
 
 ## Tech Stack
 
@@ -159,7 +160,7 @@ The app ships with complete SEO/social metadata:
 
 - Title template (`Sign in · Personal Blog`, etc.) per route
 - Open Graph image generated at build time (`src/app/opengraph-image.tsx`)
-- Dark-themed favicon (`src/app/icon.svg`) and browser theme color
+- Parchment-toned favicon (`src/app/icon.svg`) and browser theme color
 - Search engines are told **not** to index the site by default since all content is private.
   To make it indexable, change the `robots` entry in `src/app/layout.tsx`.
 

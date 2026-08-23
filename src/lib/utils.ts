@@ -1,3 +1,11 @@
+export interface Profile {
+  username: string;
+  displayName?: string | null;
+  bio?: string | null;
+  location?: string | null;
+  joined?: string;
+}
+
 export interface Blog {
   _id: string;
   title: string;
