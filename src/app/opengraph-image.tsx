@@ -15,30 +15,30 @@ export default function OpengraphImage() {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: "#0f0f0f",
-          backgroundImage:
-            "radial-gradient(circle at 50% 120%, rgba(167, 139, 250, 0.22), transparent 60%)",
-          border: "2px solid #27272a",
-          color: "#e4e4e7",
+          backgroundColor: "#f5efe6",
+          border: "2px solid #d8cca6",
         }}
       >
         <div
           style={{
+            position: "absolute",
+            top: 28,
+            left: 28,
+            right: 28,
+            bottom: 28,
             display: "flex",
-            alignItems: "center",
-            gap: 24,
-            marginBottom: 28,
+            border: "1px solid #d8cca6",
+          }}
+        />
+        <div
+          style={{
+            display: "flex",
+            fontSize: 40,
+            color: "#a36b31",
+            marginBottom: 20,
           }}
         >
-          <div
-            style={{
-              width: 14,
-              height: 14,
-              borderRadius: 999,
-              backgroundColor: "#a78bfa",
-              display: "flex",
-            }}
-          />
+          &mdash;&nbsp;&middot;&nbsp;&mdash;
         </div>
         <div
           style={{
@@ -46,6 +46,7 @@ export default function OpengraphImage() {
             fontSize: 96,
             fontWeight: 700,
             letterSpacing: -2,
+            color: "#1a1615",
           }}
         >
           Personal Blog
@@ -54,11 +55,24 @@ export default function OpengraphImage() {
           style={{
             display: "flex",
             marginTop: 24,
-            fontSize: 34,
-            color: "#71717a",
+            fontSize: 30,
+            color: "#6e6259",
+            fontStyle: "italic",
           }}
         >
           A quiet space for your thoughts
+        </div>
+        <div
+          style={{
+            display: "flex",
+            marginTop: 40,
+            fontSize: 18,
+            color: "#a36b31",
+            textTransform: "uppercase",
+            letterSpacing: 6,
+          }}
+        >
+          Quiet reflections · Unhurried thoughts
         </div>
       </div>
     ),

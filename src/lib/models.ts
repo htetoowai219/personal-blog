@@ -4,6 +4,9 @@ export interface User {
   _id?: ObjectId;
   username: string;
   password: string;
+  displayName?: string | null;
+  bio?: string | null;
+  location?: string | null;
   createdAt: Date;
 }
 

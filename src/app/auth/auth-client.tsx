@@ -49,24 +49,24 @@ export default function AuthPage() {
   return (
     <div className="flex min-h-screen items-center justify-center px-4">
       <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold tracking-tight mb-2">
+        <div className="text-center mb-10">
+          <h1 className="font-heading text-4xl text-ink tracking-tight mb-3">
             Personal Blog
           </h1>
-          <p className="text-muted text-sm">
+          <p className="font-mono text-xs uppercase tracking-[0.2em] text-muted">
             A quiet space for self-reflection
           </p>
         </div>
 
-        <div className="bg-card border border-border rounded-xl p-8">
-          <div className="flex mb-6 bg-input-bg rounded-lg p-1">
+        <div className="bg-card border border-border rounded-[3px] p-8 shadow-[4px_4px_0_rgba(44,37,35,0.06)]">
+          <div className="flex mb-7 border-b border-border">
             <button
               type="button"
               onClick={() => setIsLogin(true)}
-              className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${
+              className={`flex-1 pb-2.5 font-mono text-xs uppercase tracking-[0.15em] transition-colors border-b-2 -mb-px ${
                 isLogin
-                  ? "bg-card text-foreground shadow-sm"
-                  : "text-muted hover:text-foreground"
+                  ? "border-accent text-accent"
+                  : "border-transparent text-faint hover:text-muted"
               }`}
             >
               Sign In
@@ -74,26 +74,26 @@ export default function AuthPage() {
             <button
               type="button"
               onClick={() => setIsLogin(false)}
-              className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${
+              className={`flex-1 pb-2.5 font-mono text-xs uppercase tracking-[0.15em] transition-colors border-b-2 -mb-px ${
                 !isLogin
-                  ? "bg-card text-foreground shadow-sm"
-                  : "text-muted hover:text-foreground"
+                  ? "border-accent text-accent"
+                  : "border-transparent text-faint hover:text-muted"
               }`}
             >
               Create Account
             </button>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-sm font-medium text-muted mb-1.5">
+              <label className="block font-mono text-xs uppercase tracking-[0.15em] text-muted mb-2">
                 Username
               </label>
               <input
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full px-3 py-2.5 bg-input-bg border border-input-border rounded-lg text-foreground placeholder:text-muted/50 focus:border-accent transition-colors"
+                className="w-full px-3 py-2.5 bg-input-bg border border-input-border rounded-[3px] text-foreground placeholder:text-faint/70 focus:border-accent transition-colors"
                 placeholder="Enter your username"
                 required
                 autoFocus
@@ -101,27 +101,27 @@ export default function AuthPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-muted mb-1.5">
+              <label className="block font-mono text-xs uppercase tracking-[0.15em] text-muted mb-2">
                 Password
               </label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-3 py-2.5 bg-input-bg border border-input-border rounded-lg text-foreground placeholder:text-muted/50 focus:border-accent transition-colors"
+                className="w-full px-3 py-2.5 bg-input-bg border border-input-border rounded-[3px] text-foreground placeholder:text-faint/70 focus:border-accent transition-colors"
                 placeholder="Enter your password"
                 required
               />
             </div>
 
             {error && (
-              <p className="text-sm text-danger">{error}</p>
+              <p className="text-sm italic text-danger">{error}</p>
             )}
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-2.5 bg-accent hover:bg-accent-hover text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full py-2.5 bg-accent hover:bg-accent-hover text-[#fdfbf7] font-medium rounded-[3px] tracking-wide transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading
                 ? "Please wait..."
@@ -131,6 +131,10 @@ export default function AuthPage() {
             </button>
           </form>
         </div>
+
+        <p className="text-center mt-8 text-gold text-lg" aria-hidden>
+          &#10086;
+        </p>
       </div>
     </div>
   );
