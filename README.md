@@ -1,6 +1,12 @@
 # Personal Blog
 
-A self-hosted personal blogging platform built for self-reflection. Write entries in Markdown, tag them, track your mood, and keep your thoughts in a quiet, dark-themed space that you control.
+A self-hosted personal blogging platform built for self-reflection. Write entries in Markdown, tag them, track your mood, and keep your thoughts in a quiet, parchment-toned space that you control.
+
+## Live Demo
+
+The app is deployed on Vercel: **[personal-blog-delta-one.vercel.app](https://personal-blog-delta-one.vercel.app/)**
+
+![Personal Blog — home screen](assets/demo.png)
 
 ## Features
 
