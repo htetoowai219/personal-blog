@@ -4,7 +4,7 @@ A self-hosted personal blogging platform built for self-reflection. Write entrie
 
 ## Live Demo
 
-The app is deployed on Vercel: **[personal-blog-delta-one.vercel.app](https://personal-blog-delta-one.vercel.app/)**
+The app is deployed on Vercel: **[personal-blog-delta-one.vercel.app](https://personal-blog-fkpvu2nw9-web-main.vercel.app/)**
 
 ![Personal Blog — home screen](assets/demo.png)
 
