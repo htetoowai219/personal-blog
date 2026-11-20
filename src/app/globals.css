@@ -69,8 +69,6 @@ h1, h2, h3, h4, h5, h6 {
   color: #fdfbf7;
 }
 
-/* ---------- Long-form article styling ---------- */
-
 .prose {
   color: var(--foreground);
   line-height: 1.85;

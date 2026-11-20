@@ -30,7 +30,6 @@ export default function HomePage() {
       const data = await res.json();
       setBlogs(data);
     } catch {
-      // silent
     } finally {
       setLoading(false);
     }
@@ -78,7 +77,6 @@ export default function HomePage() {
         setEditingProfile(false);
       }
     } catch {
-      // silent
     } finally {
       setSavingProfile(false);
     }
@@ -92,7 +90,6 @@ export default function HomePage() {
         setShowDeleteConfirm(null);
       }
     } catch {
-      // silent
     }
   };
 
@@ -110,7 +107,6 @@ export default function HomePage() {
         );
       }
     } catch {
-      // silent
     }
   };
 

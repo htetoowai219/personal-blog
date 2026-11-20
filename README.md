@@ -1,175 +1,114 @@
-# Personal Blog
+<div align="center">
+  <h1>Personal Blog</h1>
+  <p>A self-hosted journal for Markdown entries, moods, and tags.</p>
+  <p><a href="https://personal-blog-fkpvu2nw9-web-main.vercel.app/"><b>Live Demo</b></a></p>
+  <p>
+    <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="License" /></a>
+    <img src="https://img.shields.io/badge/node-%3E%3D20.9.0-informational?style=flat-square" alt="Node" />
+  </p>
+  <img src="assets/demo.png" alt="Personal Blog home screen" width="100%" />
+</div>
 
-A self-hosted personal blogging platform built for self-reflection. Write entries in Markdown, tag them, track your mood, and keep your thoughts in a quiet, parchment-toned space that you control.
+## Quick Start
 
-## Live Demo
+### Prerequisites
 
-The app is deployed on Vercel: **[personal-blog-fkpvu2nw9-web-main.vercel.app](https://personal-blog-fkpvu2nw9-web-main.vercel.app/)**
+- Node.js 20.9 or newer (Next.js 16 requirement)
+- MongoDB on `localhost:27017`, or an Atlas connection string
+- Git
 
-![Personal Blog — home screen](assets/demo.png)
+### Run locally
 
-## Features
-
-- **Authentication** — Login/register gate so only you can access your entries
-- **Profile panel** — Editable keeper's profile (name, location, bio) beside your entries
-- **Markdown editing** — Full GitHub Flavored Markdown support (tables, task lists, strikethrough, code blocks)
-- **Live preview** — Toggle between edit and preview modes while writing
-- **Mood tracking** — Tag each entry with a mood (Reflective, Grateful, Anxious, Calm, Inspired, Sad)
-- **Tags** — Add comma-separated tags to organize entries
-- **Pin entries** — Pin important posts to the top of the list
-- **Search** — Filter entries by title, content, or tags
-- **Delete with confirmation** — Inline confirm before removing an entry
-- **Vintage theme** — Warm parchment palette with serif typography and typewriter accents (see [design.md](design.md))
-
-## Tech Stack
-
-| Layer     | Technology            |
-|-----------|-----------------------|
-| Framework | Next.js 16 (App Router) |
-| Language  | TypeScript            |
-| Database  | MongoDB (Atlas or local) |
-| Styling   | Tailwind CSS 4        |
-| Auth      | JWT (httpOnly cookies)|
-| Markdown  | react-markdown + remark-gfm |
-| Passwords | bcryptjs              |
-| Hosting   | Vercel-ready           |
-
-## Prerequisites
-
-- **Node.js** 18+ (recommended 20+)
-- **MongoDB** running locally on the default port (`27017`)
-
-## Getting Started
-
-1. **Clone the repository**
-
-   ```bash
-   git clone git@github.com:htetoowai219/personal-blog.git
-   cd personal-blog
-   ```
-
-2. **Install dependencies**
-
-   ```bash
-   npm install
-   ```
-
-3. **Start MongoDB**
-
-   Make sure `mongod` is running. On macOS with Homebrew:
-
-   ```bash
-   brew services start mongodb-community
-   ```
-
-4. **Run the dev server**
-
-   ```bash
-   npm run dev
-   ```
-
-5. **Open the app**
-
-   Navigate to [http://localhost:3000](http://localhost:3000). You'll be redirected to the login page. Create an account and start writing.
-
-## Project Structure
-
+```bash
+git clone git@github.com:htetoowai219/personal-blog.git
+cd personal-blog
+npm install
+npm run dev
 ```
-src/
-├── lib/
-│   ├── mongodb.ts          # MongoDB connection singleton
-│   ├── auth.ts             # JWT sign/verify, cookie helpers
-│   └── models.ts           # TypeScript interfaces (User, Blog)
-├── app/
-│   ├── layout.tsx          # Root layout with fonts
-│   ├── globals.css         # Dark theme + prose styles
-│   ├── page.tsx            # Root redirect (→ /auth or /home)
-│   ├── auth/
-│   │   ├── page.tsx
-│   │   └── auth-client.tsx # Login/register client component
-│   ├── home/
-│   │   └── page.tsx        # Blog list, create, edit, read
-│   └── api/
-│       ├── auth/
-│       │   ├── login/route.ts
-│       │   ├── register/route.ts
-│       │   ├── logout/route.ts
-│       │   └── me/route.ts
-│       └── blogs/
-│           ├── route.ts    # GET (list/search), POST (create)
-│           └── [id]/route.ts # GET, PUT, DELETE single entry
+
+Open [http://localhost:3000](http://localhost:3000) and register an account. You're in.
+
+Local defaults cover the database URI, database name, and a dev-only JWT secret, so no config file is needed to start. Override them with a `.env.local` file if you want — see [Configuration](#configuration).
+
+<details>
+<summary>Use MongoDB Atlas instead of a local server</summary>
+
+Put your Atlas SRV string in `.env.local`:
+
+```bash
+MONGODB_URI=mongodb+srv://user:password@cluster.example.mongodb.net/
 ```
+
+`MONGODB_DB` defaults to `personal_blog`.
+</details>
+
+## Why I Built This
+
+I wanted a private place to write that I own end to end. Other journaling apps held my notes behind their accounts and their themes. This one runs on my machine or my Vercel project, and the words stay in a MongoDB database I control.
+
+## What It Does
+
+- Write entries in GitHub Flavored Markdown and flip to a live preview while drafting.
+- Add a mood and comma-separated tags to each entry.
+- Pin entries, search across titles/content/tags, and delete with an inline confirm.
+- Edit a keeper profile (name, location, bio) that sits beside the entry list.
+- Sign in with JWT cookies; passwords are hashed with bcryptjs.
+
+Colors and typography are documented in [design.md](design.md).
 
 ## Configuration
 
-Copy `.env.example` to `.env.local` and fill in the values. Defaults are set for local development:
+| Variable | Required | Default | Purpose |
+|---|---|---|---|
+| `MONGODB_URI` | In production | `mongodb://localhost:27017/` | MongoDB connection string |
+| `MONGODB_DB` | No | `personal_blog` | Database name |
+| `JWT_SECRET` | In production | dev-only fallback | Signs auth tokens |
+| `NEXT_PUBLIC_SITE_URL` | No | `http://localhost:3000` | Base URL for metadata and social cards |
 
-| Variable              | Required in production | Default                        | Description                          |
-|-----------------------|------------------------|--------------------------------|--------------------------------------|
-| `MONGODB_URI`         | Yes                    | `mongodb://localhost:27017/`   | MongoDB connection string            |
-| `MONGODB_DB`          | No                     | `personal_blog`                | Database name                        |
-| `JWT_SECRET`          | Yes                    | (dev-only fallback)            | Secret for JWT signing               |
-| `NEXT_PUBLIC_SITE_URL`| Recommended            | —                              | Public URL, used for metadata/social cards |
+Generate a secret with `openssl rand -base64 32`. In production, requests fail fast if `MONGODB_URI` or `JWT_SECRET` is missing, so bad config shows up immediately.
 
-Generate a strong `JWT_SECRET` with:
+<details>
+<summary>Project layout</summary>
+
+```text
+src/
+├── lib/
+│   ├── mongodb.ts   # cached MongoDB client
+│   ├── auth.ts      # JWT sign/verify and cookie helpers
+│   ├── models.ts    # User and Blog interfaces
+│   └── utils.ts     # shared types, moods, date helpers
+└── app/
+    ├── layout.tsx   # fonts, metadata, robots rules
+    ├── globals.css  # parchment theme + prose styles
+    ├── page.tsx     # redirects to /home or /auth
+    ├── auth/        # sign-in and registration screen
+    ├── home/        # entry list, reader, new/edit pages
+    └── api/
+        ├── auth/    # login, register, logout, me
+        └── blogs/   # list/search, create, read, update, delete
+```
+</details>
+
+<details>
+<summary>Deploy to Vercel</summary>
+
+1. Create a MongoDB Atlas cluster, add a database user, and allow access from `0.0.0.0/0` (Vercel functions don't have fixed IPs).
+2. Import the GitHub repo at [vercel.com/new](https://vercel.com/new). Vercel detects Next.js without extra build settings.
+3. Add `MONGODB_URI`, `MONGODB_DB`, `JWT_SECRET`, and `NEXT_PUBLIC_SITE_URL` under Settings → Environment Variables.
+4. Deploy with the dashboard or `npx vercel --prod`.
+
+</details>
+
+## Common Commands
 
 ```bash
-openssl rand -base64 32
+npm run dev          # dev server on port 3000
+npm run lint         # ESLint
+npm run build        # production build
+npm start            # serve the build
+npx tsc --noEmit     # TypeScript check
 ```
-
-> The app refuses to boot in production if `MONGODB_URI` or `JWT_SECRET` are missing,
-> so misconfigurations surface immediately instead of failing silently.
-
-## Production Build
-
-```bash
-npm run build
-npm start
-```
-
-The app will start on port `3000` by default.
-
-## Deploying to Vercel
-
-1. **Create a MongoDB Atlas database** (free tier works fine)
-
-   1. Create a cluster at [mongodb.com/cloud/atlas](https://www.mongodb.com/cloud/atlas)
-   2. Add a database user and allow access from anywhere (`0.0.0.0/0`) under Network Access — Vercel functions use ephemeral IPs, so IP allowlists won't work
-   3. Grab the SRV connection string (`mongodb+srv://user:password@cluster...`)
-
-2. **Push the repository to GitHub**, then import it on [vercel.com/new](https://vercel.com/new)
-
-   Vercel auto-detects Next.js — no build settings needed.
-
-3. **Add environment variables** in your Vercel project (Settings → Environment Variables):
-
-   | Variable               | Value                                   |
-   |------------------------|-----------------------------------------|
-   | `MONGODB_URI`          | Your Atlas connection string            |
-   | `MONGODB_DB`           | `personal_blog`                         |
-   | `JWT_SECRET`           | Output of `openssl rand -base64 32`     |
-   | `NEXT_PUBLIC_SITE_URL` | `https://your-domain.vercel.app`        |
-
-4. **Deploy**
-
-   Every push to the main branch triggers a new deployment.
-
-Alternatively, deploy straight from the CLI:
-
-```bash
-npx vercel --prod
-```
-
-## Metadata
-
-The app ships with complete SEO/social metadata:
-
-- Title template (`Sign in · Personal Blog`, etc.) per route
-- Open Graph image generated at build time (`src/app/opengraph-image.tsx`)
-- Parchment-toned favicon (`src/app/icon.svg`) and browser theme color
-- Search engines are told **not** to index the site by default since all content is private.
-  To make it indexable, change the `robots` entry in `src/app/layout.tsx`.
 
 ## License
 
-This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
+MIT. See [LICENSE](LICENSE).

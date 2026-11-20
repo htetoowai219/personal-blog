@@ -36,7 +36,6 @@ export default function NewEntryPage() {
         router.push(`/home/${newBlog._id}`);
       }
     } catch {
-      // silent
     } finally {
       setSaving(false);
     }

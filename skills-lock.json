@@ -1,0 +1,26 @@
+{
+  "version": 2,
+  "skills": {
+    "de-slop": {
+      "source": "htetoowai219/how-skills",
+      "commit": "e0b43ba523a856f3c280c7271393ddbcd0353734",
+      "sourceType": "github",
+      "skillPath": "skills/de-slop/SKILL.md",
+      "computedHash": "da7e7274613bba8a4bc1d70e6295e6c1a742efa7a1ed525cbaaa0100b7e7043f"
+    },
+    "dockerize": {
+      "source": "htetoowai219/how-skills",
+      "commit": "e0b43ba523a856f3c280c7271393ddbcd0353734",
+      "sourceType": "github",
+      "skillPath": "skills/dockerize/SKILL.md",
+      "computedHash": "29ed311e10c115253d2e8d22eb5155d33f0024ecf7fde100b876b0eb9fe6c3f6"
+    },
+    "readme-writer": {
+      "source": "htetoowai219/how-skills",
+      "commit": "e0b43ba523a856f3c280c7271393ddbcd0353734",
+      "sourceType": "github",
+      "skillPath": "skills/readme-writer/SKILL.md",
+      "computedHash": "4403fb665584cf7b1fcb7d60b653344e93ecc0f69c22d1b2ca495600a7e3d724"
+    }
+  }
+}

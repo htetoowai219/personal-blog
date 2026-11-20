@@ -64,7 +64,6 @@ export default function EditEntryPage() {
         router.push(`/home/${id}`);
       }
     } catch {
-      // silent
     } finally {
       setSaving(false);
     }
