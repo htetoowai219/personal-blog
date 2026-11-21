@@ -45,3 +45,19 @@ export async function handleLogout(router: { replace: (href: string) => void }) 
   await fetch("/api/auth/logout", { method: "POST" });
   router.replace("/auth");
 }
+
+export function getReadingStats(content: string) {
+  const trimmed = content.trim();
+  const words = trimmed ? trimmed.split(/\s+/).length : 0;
+  const chars = content.length;
+  const minutes = words === 0 ? 0 : Math.max(1, Math.ceil(words / 200));
+
+  return {
+    words,
+    chars,
+    minutes,
+    wordsText: `${words.toLocaleString()} ${words === 1 ? "word" : "words"}`,
+    charsText: `${chars.toLocaleString()} ${chars === 1 ? "char" : "chars"}`,
+    readTimeText: `~${minutes} min read`,
+  };
+}

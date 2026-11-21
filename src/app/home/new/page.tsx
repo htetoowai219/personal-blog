@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { MOODS, handleLogout } from "@/lib/utils";
+import { MOODS, handleLogout, getReadingStats } from "@/lib/utils";
 
 export default function NewEntryPage() {
   const router = useRouter();
@@ -15,6 +15,8 @@ export default function NewEntryPage() {
   const [tagsInput, setTagsInput] = useState("");
   const [saving, setSaving] = useState(false);
   const [preview, setPreview] = useState(false);
+
+  const stats = getReadingStats(content);
 
   const handleSave = async () => {
     if (!title.trim() || !content.trim()) return;
@@ -132,6 +134,13 @@ export default function NewEntryPage() {
             className="w-full min-h-[50vh] bg-transparent border-none resize-none placeholder:text-faint/60 focus:outline-none text-[1.0625rem] leading-loose"
           />
         )}
+        <div className="mt-4 pt-3 border-t border-dashed border-border/60 flex items-center gap-2 font-mono text-xs text-muted/50 select-none">
+          <span>{stats.wordsText}</span>
+          <span aria-hidden>·</span>
+          <span>{stats.charsText}</span>
+          <span aria-hidden>·</span>
+          <span>{stats.readTimeText}</span>
+        </div>
       </main>
     </div>
   );
