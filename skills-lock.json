@@ -15,6 +15,13 @@
       "skillPath": "skills/dockerize/SKILL.md",
       "computedHash": "29ed311e10c115253d2e8d22eb5155d33f0024ecf7fde100b876b0eb9fe6c3f6"
     },
+    "fix-issue": {
+      "source": "htetoowai219/how-skills",
+      "commit": "c70f7dba74f376ab6e0c91b7a27232f4a4d3a992",
+      "sourceType": "github",
+      "skillPath": "skills/fix-issue/SKILL.md",
+      "computedHash": "fe08c7d3a2553c5787263236ec404b37d0f2aba3b57507b1f25ddd2cdd8cc275"
+    },
     "readme-writer": {
       "source": "htetoowai219/how-skills",
       "commit": "e0b43ba523a856f3c280c7271393ddbcd0353734",
