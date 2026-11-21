@@ -35,6 +35,7 @@ export async function POST(request: NextRequest) {
 
     return response;
   } catch (error: unknown) {
+    console.error("Register error:", error);
     if (
       (error instanceof MongoServerError && error.code === 11000) ||
       (typeof error === "object" && error !== null && "code" in error && (error as { code: unknown }).code === 11000)

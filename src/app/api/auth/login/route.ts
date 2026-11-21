@@ -31,7 +31,8 @@ export async function POST(request: NextRequest) {
     setAuthCookie(response, token);
 
     return response;
-  } catch {
+  } catch (error) {
+    console.error("Login error:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
