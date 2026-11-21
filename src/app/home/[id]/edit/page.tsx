@@ -5,7 +5,7 @@ import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { Blog, MOODS, handleLogout } from "@/lib/utils";
+import { Blog, MOODS, handleLogout, getReadingStats } from "@/lib/utils";
 
 export default function EditEntryPage() {
   const router = useRouter();
@@ -19,6 +19,8 @@ export default function EditEntryPage() {
   const [saving, setSaving] = useState(false);
   const [preview, setPreview] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  const stats = getReadingStats(content);
 
   useEffect(() => {
     fetch(`/api/blogs/${id}`)
@@ -172,6 +174,13 @@ export default function EditEntryPage() {
             className="w-full min-h-[50vh] bg-transparent border-none resize-none placeholder:text-faint/60 focus:outline-none text-[1.0625rem] leading-loose"
           />
         )}
+        <div className="mt-4 pt-3 border-t border-dashed border-border/60 flex items-center gap-2 font-mono text-xs text-muted/50 select-none">
+          <span>{stats.wordsText}</span>
+          <span aria-hidden>·</span>
+          <span>{stats.charsText}</span>
+          <span aria-hidden>·</span>
+          <span>{stats.readTimeText}</span>
+        </div>
       </main>
     </div>
   );
