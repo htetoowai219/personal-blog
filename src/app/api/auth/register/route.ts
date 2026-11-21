@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
+import { MongoServerError } from "mongodb";
 import { connectToDatabase } from "@/lib/mongodb";
 import { setAuthCookie, signToken } from "@/lib/auth";
 import { User } from "@/lib/models";
@@ -33,7 +34,13 @@ export async function POST(request: NextRequest) {
     setAuthCookie(response, token);
 
     return response;
-  } catch {
+  } catch (error: unknown) {
+    if (
+      (error instanceof MongoServerError && error.code === 11000) ||
+      (typeof error === "object" && error !== null && "code" in error && (error as { code: unknown }).code === 11000)
+    ) {
+      return NextResponse.json({ error: "Username already exists" }, { status: 409 });
+    }
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
