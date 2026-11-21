@@ -2,8 +2,8 @@ import jwt from "jsonwebtoken";
 import { NextRequest, NextResponse } from "next/server";
 
 function getJwtSecret(): string {
-  const secret = process.env.JWT_SECRET;
-  if (!secret) {
+  const rawSecret = process.env.JWT_SECRET;
+  if (!rawSecret || !rawSecret.trim()) {
     if (process.env.NODE_ENV === "production") {
       throw new Error(
         "JWT_SECRET environment variable is required in production. Set it in your Vercel project settings."
@@ -11,6 +11,12 @@ function getJwtSecret(): string {
     }
     return "personal-blog-dev-secret-do-not-use-in-production";
   }
+
+  let secret = rawSecret.trim();
+  if ((secret.startsWith('"') && secret.endsWith('"')) || (secret.startsWith("'") && secret.endsWith("'"))) {
+    secret = secret.slice(1, -1).trim();
+  }
+
   return secret;
 }
 

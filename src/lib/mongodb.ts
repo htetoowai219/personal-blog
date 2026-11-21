@@ -3,8 +3,8 @@ import { MongoClient, Db } from "mongodb";
 const dbName = process.env.MONGODB_DB || "personal_blog";
 
 function getUri(): string {
-  const uri = process.env.MONGODB_URI;
-  if (!uri) {
+  const rawUri = process.env.MONGODB_URI;
+  if (!rawUri || !rawUri.trim()) {
     if (process.env.NODE_ENV === "production") {
       throw new Error(
         "MONGODB_URI environment variable is required in production. Set it in your Vercel project settings."
@@ -12,6 +12,18 @@ function getUri(): string {
     }
     return "mongodb://localhost:27017/";
   }
+
+  let uri = rawUri.trim();
+  if ((uri.startsWith('"') && uri.endsWith('"')) || (uri.startsWith("'") && uri.endsWith("'"))) {
+    uri = uri.slice(1, -1).trim();
+  }
+
+  if (uri.includes("<") || uri.includes(">")) {
+    throw new Error(
+      "MONGODB_URI contains '<' or '>' brackets. Replace <db_username> and <db_password> with your actual database user credentials."
+    );
+  }
+
   return uri;
 }
 
@@ -37,7 +49,11 @@ export async function connectToDatabase(): Promise<{ client: MongoClient; db: Db
       });
       await client.connect();
       const db = client.db(dbName);
-      await db.collection("users").createIndex({ username: 1 }, { unique: true });
+      try {
+        await db.collection("users").createIndex({ username: 1 }, { unique: true });
+      } catch (idxErr) {
+        console.warn("Index creation warning (non-fatal):", idxErr);
+      }
       return { client, db };
     })();
   }
