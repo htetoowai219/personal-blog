@@ -14,6 +14,12 @@ export async function GET(request: NextRequest) {
 
   const { searchParams } = new URL(request.url);
   const search = searchParams.get("search");
+  const pageParam = parseInt(searchParams.get("page") || "1", 10);
+  const limitParam = parseInt(searchParams.get("limit") || "20", 10);
+
+  const page = Math.max(1, isNaN(pageParam) ? 1 : pageParam);
+  const pageSize = Math.max(1, Math.min(100, isNaN(limitParam) ? 20 : limitParam));
+  const skip = (page - 1) * pageSize;
 
   const query: Record<string, unknown> = { userId: user.userId };
   if (search) {
@@ -24,17 +30,28 @@ export async function GET(request: NextRequest) {
     ];
   }
 
-  const result = await blogs
-    .find(query)
-    .sort({ pinned: -1, updatedAt: -1 })
-    .toArray();
+  const [total, result] = await Promise.all([
+    blogs.countDocuments(query),
+    blogs
+      .find(query)
+      .sort({ pinned: -1, updatedAt: -1 })
+      .skip(skip)
+      .limit(pageSize)
+      .toArray(),
+  ]);
 
-  return NextResponse.json(
-    result.map((b) => ({
+  const totalPages = Math.ceil(total / pageSize);
+
+  return NextResponse.json({
+    blogs: result.map((b) => ({
       ...b,
       _id: b._id!.toString(),
-    }))
-  );
+    })),
+    total,
+    page,
+    pageSize,
+    totalPages,
+  });
 }
 
 export async function POST(request: NextRequest) {

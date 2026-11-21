@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Pin, PinOff, Pencil, Trash2 } from "lucide-react";
@@ -8,27 +8,54 @@ import { Blog, Profile, MOODS, formatDate, handleLogout } from "@/lib/utils";
 
 const EMPTY_FORM = { displayName: "", location: "", bio: "" };
 
+function getPageNumbers(currentPage: number, totalPages: number): (number | string)[] {
+  if (totalPages <= 7) {
+    return Array.from({ length: totalPages }, (_, i) => i + 1);
+  }
+
+  if (currentPage <= 4) {
+    return [1, 2, 3, 4, 5, "...", totalPages];
+  }
+
+  if (currentPage >= totalPages - 3) {
+    return [1, "...", totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+  }
+
+  return [1, "...", currentPage - 1, currentPage, currentPage + 1, "...", totalPages];
+}
+
 export default function HomePage() {
   const router = useRouter();
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [total, setTotal] = useState(0);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [editingProfile, setEditingProfile] = useState(false);
   const [profileForm, setProfileForm] = useState(EMPTY_FORM);
   const [savingProfile, setSavingProfile] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
+  const isPageChange = useRef(false);
 
-  const fetchBlogs = useCallback(async (searchQuery?: string) => {
+  const fetchBlogs = useCallback(async (searchQuery?: string, pageNumber: number = 1) => {
     try {
-      const url = searchQuery ? `/api/blogs?search=${encodeURIComponent(searchQuery)}` : "/api/blogs";
+      const params = new URLSearchParams();
+      if (searchQuery) params.set("search", searchQuery);
+      params.set("page", pageNumber.toString());
+      params.set("limit", "20");
+      const url = `/api/blogs?${params.toString()}`;
       const res = await fetch(url);
       if (res.status === 401) {
         router.replace("/auth");
         return;
       }
       const data = await res.json();
-      setBlogs(data);
+      setBlogs(data.blogs || []);
+      setTotal(data.total || 0);
+      setTotalPages(data.totalPages || 0);
+      setPage(data.page || 1);
     } catch {
     } finally {
       setLoading(false);
@@ -56,12 +83,24 @@ export default function HomePage() {
       });
   }, [router]);
 
+  const handlePageChange = (newPage: number) => {
+    isPageChange.current = true;
+    setPage(newPage);
+  };
+
+  const handleSearchChange = (value: string) => {
+    setSearch(value);
+    setPage(1);
+  };
+
   useEffect(() => {
+    const delay = isPageChange.current ? 0 : (search ? 300 : 0);
+    isPageChange.current = false;
     const timer = setTimeout(() => {
-      fetchBlogs(search);
-    }, search ? 300 : 0);
+      fetchBlogs(search, page);
+    }, delay);
     return () => clearTimeout(timer);
-  }, [search, fetchBlogs]);
+  }, [search, page, fetchBlogs]);
 
   const handleSaveProfile = async () => {
     setSavingProfile(true);
@@ -86,8 +125,12 @@ export default function HomePage() {
     try {
       const res = await fetch(`/api/blogs/${id}`, { method: "DELETE" });
       if (res.ok) {
-        setBlogs((prev) => prev.filter((b) => b._id !== id));
         setShowDeleteConfirm(null);
+        if (blogs.length === 1 && page > 1) {
+          handlePageChange(page - 1);
+        } else {
+          fetchBlogs(search, page);
+        }
       }
     } catch {
     }
@@ -101,10 +144,7 @@ export default function HomePage() {
         body: JSON.stringify({ pinned: !blog.pinned }),
       });
       if (res.ok) {
-        const updated = await res.json();
-        setBlogs((prev) =>
-          prev.map((b) => (b._id === updated._id ? updated : b))
-        );
+        fetchBlogs(search, page);
       }
     } catch {
     }
@@ -263,7 +303,7 @@ export default function HomePage() {
               <input
                 type="text"
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={(e) => handleSearchChange(e.target.value)}
                 placeholder="Search entries..."
                 className="w-full px-4 py-2.5 bg-input-bg border border-input-border rounded-[3px] font-mono text-sm placeholder:text-faint/70 focus:border-accent transition-colors"
               />
@@ -386,6 +426,57 @@ export default function HomePage() {
                     </article>
                   );
                 })}
+
+                {totalPages > 1 && (
+                  <nav
+                    aria-label="Pagination"
+                    className="mt-8 flex flex-wrap items-center justify-between gap-4 pt-6 border-t border-dashed border-border font-mono text-xs"
+                  >
+                    <p className="text-muted tracking-wider">
+                      Showing {Math.min((page - 1) * 20 + 1, total)}–{Math.min(page * 20, total)} of {total} entries
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handlePageChange(Math.max(1, page - 1))}
+                        disabled={page <= 1}
+                        className="px-3 py-1.5 uppercase tracking-[0.15em] border border-border rounded-[3px] bg-card hover:bg-card-hover text-muted hover:text-foreground disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                      >
+                        Previous
+                      </button>
+
+                      <div className="flex items-center gap-1">
+                        {getPageNumbers(page, totalPages).map((pageNum, idx) =>
+                          typeof pageNum === "number" ? (
+                            <button
+                              key={pageNum}
+                              onClick={() => handlePageChange(pageNum)}
+                              aria-current={page === pageNum ? "page" : undefined}
+                              className={`min-w-8 h-8 px-2 flex items-center justify-center rounded-[3px] transition-colors ${
+                                page === pageNum
+                                  ? "bg-accent text-[#fdfbf7] font-semibold shadow-[2px_2px_0_rgba(44,37,35,0.15)]"
+                                  : "border border-border bg-card hover:bg-card-hover text-muted hover:text-foreground"
+                              }`}
+                            >
+                              {pageNum}
+                            </button>
+                          ) : (
+                            <span key={`ellipsis-${idx}`} className="px-1 text-faint">
+                              {pageNum}
+                            </span>
+                          )
+                        )}
+                      </div>
+
+                      <button
+                        onClick={() => handlePageChange(Math.min(totalPages, page + 1))}
+                        disabled={page >= totalPages}
+                        className="px-3 py-1.5 uppercase tracking-[0.15em] border border-border rounded-[3px] bg-card hover:bg-card-hover text-muted hover:text-foreground disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                      >
+                        Next
+                      </button>
+                    </div>
+                  </nav>
+                )}
               </div>
             )}
           </section>
