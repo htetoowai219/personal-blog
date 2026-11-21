@@ -37,6 +37,7 @@ export async function connectToDatabase(): Promise<{ client: MongoClient; db: Db
       });
       await client.connect();
       const db = client.db(dbName);
+      await db.collection("users").createIndex({ username: 1 }, { unique: true });
       return { client, db };
     })();
   }
